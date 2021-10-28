@@ -10,6 +10,16 @@ export const colors = {
   black: '#121212',
   trueBlack: '#000000',
   orange: '#ff2a14',
+  white: '#ffffff',
+};
+
+export const fontSizes = {
+  largeTitle: 36,
+  smallTitle: 28,
+  header: 22,
+  subHeaderText: 20,
+  buttonText: 18,
+  qAText: 16,
 };
 
 export const globalStyles = {
