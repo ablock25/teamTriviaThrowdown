@@ -49,7 +49,7 @@ export const HomeScreen = () => {
       </View>
       <View style={styles.container}>
         <AnimatedMove
-          friction={1}
+          friction={0.5}
           tension={20}
           delay={1000}
           startY={SCREEN_HEIGHT / 8}
@@ -78,7 +78,6 @@ export const HomeScreen = () => {
 
 const styles = StyleSheet.create({
   bottomIcon: {
-    marginVertical: globalStyles.standardPadding,
     alignSelf: 'center',
     justifyContent: 'flex-start',
     flex: 2,

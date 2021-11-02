@@ -1,18 +1,15 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { Animated, Button, StyleSheet } from 'react-native';
 import { AnimatedFade, AnimatedMove, SegmentedControl } from '@airship/rn-components';
+import { Picker } from '@react-native-community/picker';
 import { useNavigation } from '@react-navigation/core';
 
 import { View } from '../components/common/View';
 import { Text } from '../components/common/Text';
 import { Screen } from '../components/common/Screen';
 import { colors, globalStyles, SCREEN_WIDTH, fontSizes } from '../styles/globalStyles';
-import { Round } from '../components/game/Round';
-import { Question } from '../components/game/Question';
-import { Answer } from '../components/game/Answer';
-import { AnswerList } from '../components/game/AnswerList';
 
-export const GameScreen = (numRounds: number, numQuestions: number, category: String) => {
+export const ResultsScreen = () => {
   const { navigate } = useNavigation();
 
   const [fadeOut, setFadeOut] = useState(false);
@@ -21,14 +18,50 @@ export const GameScreen = (numRounds: number, numQuestions: number, category: St
   const [roundActive, setRoundActive] = useState(false);
   const [questionActive, setQuestionActive] = useState(false);
 
-  const [roundNum, setRound] = useState(1);
-  const [questionNum, setQuestion] = useState(1);
+  const [roundNum, setRound] = useState(0);
+  const [questionNum, setQuestion] = useState(0);
 
-  const [answerTimer, setAnswerTimer] = useState(15);
+  const [answerTimer, setAnswerTimer] = useState(20);
   const [nextQuestionTimer, setNextQuestionTimer] = useState(10);
 
   const [wrongAnswers, setWrongAnswers] = useState([]);
   const [correctAnswer, setCorrectAnswer] = useState('null');
+
+  // const x1 = ['0', '-0.196', '0', '-0.293', '0.5'];
+  // const x2 = ['0.5', '0.97', '1', '1.46', '0.484'];
+  // const y1 = ['0', '0.206', '0.512', '0.804', '0.993'];
+  // const y2 = ['1', '0.561', '0.461', '0.274', '0'];
+
+  // const x1Value = introProgress.interpolate({
+  //   inputRange: x1.map((_, i) => i / x1.length),
+  //   outputRange: x1.map((value) => value),
+  // });
+  // const x2Value = introProgress.interpolate({
+  //   inputRange: x2.map((_, i) => i / x2.length),
+  //   outputRange: x2.map((value) => value),
+  // });
+  // const y1Value = introProgress.interpolate({
+  //   inputRange: y1.map((_, i) => i / y1.length),
+  //   outputRange: y1.map((value) => value),
+  // });
+  // const y2Value = introProgress.interpolate({
+  //   inputRange: y2.map((_, i) => i / y2.length),
+  //   outputRange: y2.map((value) => value),
+  // });
+
+  // const play = () => {
+  //   Animated.timing(introProgress, {
+  //     toValue: 1,
+  //     duration: 11800,
+  //     useNativeDriver: false,
+  //   }).start((status) => {
+  //     if (status.finished) {
+  //       setFadeOut(true);
+  //     }
+  //   });
+  // };
+
+  /**/ 
 
   const renderRound = () => {
     return (
@@ -81,8 +114,8 @@ export const GameScreen = (numRounds: number, numQuestions: number, category: St
     );
   };
 
-  const handleSubmit = () => {
-    setQuestion(questionNum + 1);
+  const handleSubmit = () {
+
   };
 
   const renderCorrectAnswer = () => {
@@ -94,23 +127,17 @@ export const GameScreen = (numRounds: number, numQuestions: number, category: St
     );
   };
 
-  // const render = () => {
-  //   switch (key) {
-  //     case value:
-  //       break;
 
-  //     default:
-  //       break;
-  //   }
-  // };
+
 
   return (
     <Screen>
       <View style={styles.container}>
-        <Round roundNum={1} active={false} />
-        <Question questionNum={questionNum} active={false} />
-        <AnswerList answerArray={[]} />
-        <Button title={'Submit'} onPress={handleSubmit} />
+        {renderRound()}
+        {renderQuestionHeader()}
+        {renderQuestion()}
+        {renderAnswers()}
+        <Button title={'Submit'} onPress={} />
       </View>
     </Screen>
   );
@@ -152,9 +179,8 @@ const styles = StyleSheet.create({
   },
   container: {
     flex: 1,
-    justifyContent: 'space-evenly',
+    alignItems: 'center',
     margin: globalStyles.standardPadding * 4,
-    borderWidth: 1,
   },
   questionHeaderText: {
     elevation: 100,
