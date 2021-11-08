@@ -33,6 +33,6 @@ const styles = StyleSheet.create({
   italic: { fontStyle: 'italic' },
   standardText: {
     ...globalStyles.standardText,
-    color: colors.black,
+    color: colors.dark,
   },
 });

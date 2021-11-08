@@ -7,24 +7,25 @@ const STANDARD_FONT_SIZE = 16;
 export const LINE_HEIGHT_MULTIPLIER = 1.7;
 
 export const colors = {
-  black: '#121212',
-  trueBlack: '#000000',
-  orange: '#ff2a14',
-  white: '#ffffff',
+  orange: '#D72B18',
+  offWhite: '#BDBEAC',
+  gray: '#393E45',
+  white: '#F4F5F4',
+  dark: '#0F1216',
 };
 
 export const fontSizes = {
-  largeTitle: 36,
-  smallTitle: 28,
-  header: 22,
-  subHeaderText: 20,
-  buttonText: 18,
-  qAText: 16,
+  largeTitle: 38,
+  smallTitle: 30,
+  header: 24,
+  subHeaderText: 22,
+  buttonText: 20,
+  qAText: 18,
 };
 
 export const globalStyles = {
   standardText: {
-    color: colors.black,
+    color: colors.dark,
     fontSize: STANDARD_FONT_SIZE,
     lineHeight: STANDARD_FONT_SIZE * LINE_HEIGHT_MULTIPLIER,
   },
@@ -32,7 +33,7 @@ export const globalStyles = {
   standardPadding: 8,
   shadow: {
     elevation: 8,
-    shadowColor: colors.black,
+    shadowColor: colors.dark,
     shadowOffset: { width: 0, height: 5 },
     shadowOpacity: 0.13,
     shadowRadius: 6.27,

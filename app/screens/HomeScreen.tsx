@@ -58,7 +58,7 @@ export const HomeScreen = () => {
           }}
         >
           <AnimatedFade duration={3000}>
-            <Blimp containerStyle={styles.bottomIcon} size={150} color={colors.black} />
+            <Blimp containerStyle={styles.bottomIcon} size={150} color={colors.dark} />
             {settled && (
               <>
                 <Button

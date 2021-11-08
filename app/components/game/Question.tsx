@@ -1,9 +1,10 @@
 import React, { FC } from 'react';
-import { StyleSheet, View } from 'react-native';
+import { StyleSheet } from 'react-native';
 import { AnimatedFade, AnimatedMove } from '@airship/rn-components';
 
 import { Text } from '../common/Text';
-import { colors, fontSizes, globalStyles } from '../../styles/globalStyles';
+import { colors, fontSizes, globalStyles, SCREEN_WIDTH } from '../../styles/globalStyles';
+import { View } from '../common/View';
 
 type Props = { questionNum: number; active: boolean };
 
@@ -11,41 +12,45 @@ export const Question: FC<Props> = ({ questionNum = 1, active = false }) => {
   return (
     <>
       {!active && (
-        <View>
-          <AnimatedMove>
-            <AnimatedFade delay={1000} duration={1000}>
-              <Text style={styles.questionHeaderText}>Question {questionNum}</Text>
-            </AnimatedFade>
-          </AnimatedMove>
-          <AnimatedMove>
-            <AnimatedFade delay={2000} duration={1000}>
-              <Text style={styles.questionText}>Which bear is best?</Text>
-            </AnimatedFade>
-          </AnimatedMove>
-        </View>
+        <AnimatedMove style={styles.container} startX={-SCREEN_WIDTH} friction={2} delay={2000}>
+          <AnimatedFade delay={2000} duration={1000}>
+            <View style={styles.container}>
+              <View row>
+                <Text style={styles.questionHeaderText}>Question {questionNum}</Text>
+              </View>
+              <View>
+                <Text style={styles.questionText}>Which bear is best?</Text>
+              </View>
+            </View>
+          </AnimatedFade>
+        </AnimatedMove>
       )}
     </>
   );
 };
 
 const styles = StyleSheet.create({
-  //   container: {
-  //     flex: 1,
-  //     alignItems: 'center',
-  //     margin: globalStyles.standardPadding * 4,
-  //   },
+  container: {
+    justifyContent: 'center',
+    flex: 2,
+    alignItems: 'center',
+    marginVertical: globalStyles.standardPadding,
+    backgroundColor: colors.offWhite,
+    borderRadius: globalStyles.standardBorderRadius,
+    alignContent: 'stretch',
+  },
   questionHeaderText: {
     elevation: 100,
-    fontSize: fontSizes.header,
+    fontSize: fontSizes.largeTitle,
     fontWeight: 'bold',
     textShadowRadius: 6,
     textShadowColor: colors.orange,
     shadowOpacity: 0.8,
+    marginBottom: globalStyles.standardPadding,
     padding: globalStyles.standardPadding * 2,
   },
   questionText: {
     fontSize: fontSizes.qAText,
     fontWeight: '500',
-    padding: globalStyles.standardPadding * 2,
   },
 });
