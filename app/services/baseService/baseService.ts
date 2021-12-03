@@ -3,14 +3,21 @@ import Config from 'react-native-config';
 import { requestTransformer, responseTransformer } from './transformers';
 import { Action, ApiResponse, RequestParams } from './baseService.types';
 
-const baseService = axios.create({
+const transformRequest = (data: any) => {
+  if (data !== undefined && data !== '') {
+    return JSON.stringify(data);
+  }
+  return data;
+};
+
+export const baseService = axios.create({
   baseURL: Config.API_BASE_URL ?? '',
   headers: {
     Accept: 'application/json',
     'Content-Type': 'application/json',
   },
-  transformRequest: [requestTransformer],
-  transformResponse: [responseTransformer],
+  transformRequest: [transformRequest],
+  // transformResponse: [responseTransformer],
 });
 
 const session = async () => {

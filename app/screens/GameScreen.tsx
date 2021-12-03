@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { FC, useEffect, useRef, useState } from 'react';
 import { Animated, Button, StyleSheet } from 'react-native';
 import { AnimatedFade, AnimatedMove } from '@airship/rn-components';
 import { useNavigation } from '@react-navigation/core';
@@ -11,7 +11,13 @@ import { Round } from '../components/game/Round';
 import { Question } from '../components/game/Question';
 import { AnswerList } from '../components/game/AnswerList';
 
-export const GameScreen = (numRounds: number, numQuestions: number, category: String) => {
+type Props = {
+  numRounds: number;
+  numQuestions: number;
+  category: string;
+};
+
+export const GameScreen: FC<Props> = ({ numRounds, numQuestions, category }) => {
   const { navigate } = useNavigation();
 
   const [fadeOut, setFadeOut] = useState(false);
@@ -39,11 +45,12 @@ export const GameScreen = (numRounds: number, numQuestions: number, category: St
   useEffect(() => {
     setQuestion(1);
   }, [setRound, roundNum]);
+
   return (
     <Screen>
       <View style={styles.container}>
         <Round roundNum={roundNum} active={false} />
-        <Question questionNum={questionNum} active={false} />
+        <Question questionNum={questionNum} />
         <AnswerList answerArray={[]} />
         <Button title={'Submit'} onPress={handleSubmit} />
       </View>
