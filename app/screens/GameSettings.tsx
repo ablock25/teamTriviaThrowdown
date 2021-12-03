@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Button, StyleSheet } from 'react-native';
 import { SegmentedControl } from '@airship/rn-components';
 import { Picker } from '@react-native-community/picker';
@@ -8,12 +8,27 @@ import { View } from '../components/common/View';
 import { Text } from '../components/common/Text';
 import { Screen } from '../components/common/Screen';
 import { colors, globalStyles, SCREEN_WIDTH, fontSizes } from '../styles/globalStyles';
+import { getCategories } from '../services/baseService/categoriesService';
+import { Category } from '../types/common';
+import { ItemValue } from '@react-native-community/picker/typings/Picker';
 
 export const GameSettingsScreen = () => {
   const { navigate } = useNavigation();
+  const [categories, setCategories] = useState([]);
   const [currRounds, setCurrRounds] = useState(0);
   const [currQuestions, setcurrQuestions] = useState(0);
-  const [currCategory, setCurrCategory] = useState(0);
+  const [currCategory, setCurrCategory] = useState('');
+
+  const fetchCategories = () => {
+    getCategories().then((r) => {
+      setCategories(r);
+    });
+  };
+
+  useEffect(() => {
+    fetchCategories();
+  }, []);
+
   return (
     <Screen>
       <View style={styles.container}>
@@ -51,23 +66,12 @@ export const GameSettingsScreen = () => {
           </Text>
           <Picker
             selectedValue={currCategory}
-            onValueChange={(itemValue, itemIndex) => {
-              setCurrCategory(itemIndex);
+            onValueChange={(itemValue: ItemValue) => {
+              setCurrCategory(itemValue.toString());
             }}
           >
-            {Object([
-              'test1',
-              'test2',
-              'test3',
-              'test4',
-              'test5',
-              'test6',
-              'test7',
-              'test8',
-              'test9',
-              'test10',
-            ]).map((item: string, index: number) => {
-              return <Picker.Item label={item} value={index} key={index} />; //if you have a bunch of keys value pair
+            {categories.map((item: Category, index: number) => {
+              return <Picker.Item label={item.label} value={item.value} key={index} />; //if you have a bunch of keys value pair
             })}
           </Picker>
         </View>
@@ -96,7 +100,7 @@ const styles = StyleSheet.create({
     margin: globalStyles.standardPadding * 4,
   },
   pickerView: {
-    flex: 4,
+    flex: 3,
     width: SCREEN_WIDTH - globalStyles.standardPadding * 2,
   },
   segmentContainer: {
