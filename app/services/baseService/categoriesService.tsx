@@ -1,7 +1,6 @@
 import { baseService } from './baseService';
 
 export const getCategories = () => {
-  console.log({ baseService });
   return baseService
     .get('/categories')
     .then((r) => {

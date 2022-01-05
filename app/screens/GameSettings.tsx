@@ -11,23 +11,25 @@ import { colors, globalStyles, SCREEN_WIDTH, fontSizes } from '../styles/globalS
 import { getCategories } from '../services/baseService/categoriesService';
 import { Category } from '../types/common';
 import { ItemValue } from '@react-native-community/picker/typings/Picker';
+import { useGame } from '../context/GameContext';
 
 export const GameSettingsScreen = () => {
   const { navigate } = useNavigation();
-  const [categories, setCategories] = useState([]);
-  const [currRounds, setCurrRounds] = useState(0);
-  const [currQuestions, setcurrQuestions] = useState(0);
-  const [currCategory, setCurrCategory] = useState('');
+  const { state, dispatch, fetchQuestions, fetchCategories } = useGame();
+  const [roundIndex, setRoundIndex] = useState(0);
+  const [questionIndex, setQuestionIndex] = useState(0);
 
-  const fetchCategories = () => {
-    getCategories().then((r) => {
-      setCategories(r);
-    });
-  };
+  const NUM_ROUNDS = ['1', '2', '3'];
+  const NUM_QUESTIONS = ['5', '6', '7', '8', '9', '10'];
 
   useEffect(() => {
     fetchCategories();
   }, []);
+
+  const handleBegin = async () => {
+    await fetchQuestions();
+    navigate('GameScreen');
+  };
 
   return (
     <Screen>
@@ -37,11 +39,12 @@ export const GameSettingsScreen = () => {
             ROUNDS
           </Text>
           <SegmentedControl
-            tabs={['1', '2', '3']}
-            onChange={(id) => {
-              setCurrRounds(id);
+            tabs={NUM_ROUNDS}
+            onChange={(index) => {
+              setRoundIndex(index);
+              dispatch({ type: 'setNumRounds', payload: parseInt(NUM_ROUNDS[index]) });
             }}
-            currentIndex={currRounds}
+            currentIndex={roundIndex}
             activeSegmentBackgroundColor={colors.orange}
             containerStyle={styles.segmentContainer}
           />
@@ -51,11 +54,12 @@ export const GameSettingsScreen = () => {
             QUESTIONS
           </Text>
           <SegmentedControl
-            tabs={['5', '6', '7', '8', '9', '10']}
-            onChange={(id) => {
-              setcurrQuestions(id);
+            tabs={NUM_QUESTIONS}
+            onChange={(index) => {
+              setQuestionIndex(index);
+              dispatch({ type: 'setNumQuestions', payload: parseInt(NUM_QUESTIONS[index]) });
             }}
-            currentIndex={currQuestions}
+            currentIndex={questionIndex}
             activeSegmentBackgroundColor={colors.orange}
             containerStyle={styles.segmentContainer}
           />
@@ -65,22 +69,17 @@ export const GameSettingsScreen = () => {
             CATEGORY
           </Text>
           <Picker
-            selectedValue={currCategory}
+            selectedValue={state.category}
             onValueChange={(itemValue: ItemValue) => {
-              setCurrCategory(itemValue.toString());
+              dispatch({ type: 'setCategory', payload: itemValue.toString() });
             }}
           >
-            {categories.map((item: Category, index: number) => {
+            {state.categories.map((item: Category, index: number) => {
               return <Picker.Item label={item.label} value={item.value} key={index} />; //if you have a bunch of keys value pair
             })}
           </Picker>
         </View>
-        <Button
-          title={'Begin Game'}
-          onPress={() => {
-            navigate('GameScreen');
-          }}
-        />
+        <Button title={'Begin Game'} onPress={handleBegin} />
       </View>
     </Screen>
   );

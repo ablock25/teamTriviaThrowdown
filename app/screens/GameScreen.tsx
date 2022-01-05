@@ -1,7 +1,7 @@
 import React, { FC, useEffect, useRef, useState } from 'react';
 import { Animated, Button, StyleSheet } from 'react-native';
 import { AnimatedFade, AnimatedMove } from '@airship/rn-components';
-import { useNavigation } from '@react-navigation/core';
+import { NavigationProp, Route, useNavigation, useRoute } from '@react-navigation/core';
 
 import { View } from '../components/common/View';
 import { Text } from '../components/common/Text';
@@ -10,48 +10,38 @@ import { colors, globalStyles, fontSizes } from '../styles/globalStyles';
 import { Round } from '../components/game/Round';
 import { Question } from '../components/game/Question';
 import { AnswerList } from '../components/game/AnswerList';
+import { useGame } from '../context/GameContext';
 
-type Props = {
-  numRounds: number;
-  numQuestions: number;
-  category: string;
-};
-
-export const GameScreen: FC<Props> = ({ numRounds, numQuestions, category }) => {
+export const GameScreen = () => {
   const { navigate } = useNavigation();
-
-  const [fadeOut, setFadeOut] = useState(false);
-  const introProgress = useRef(new Animated.Value(0)).current;
-
-  const [roundActive, setRoundActive] = useState(false);
-  const [questionActive, setQuestionActive] = useState(false);
-
-  const [roundNum, setRound] = useState(1);
-  const [questionNum, setQuestion] = useState(1);
-
-  const [answerTimer, setAnswerTimer] = useState(15);
-  const [nextQuestionTimer, setNextQuestionTimer] = useState(10);
-
-  const [wrongAnswers, setWrongAnswers] = useState([]);
-  const [correctAnswer, setCorrectAnswer] = useState('null');
+  const { state, dispatch } = useGame();
 
   const handleSubmit = () => {
-    setQuestion(questionNum + 1);
-    if (questionNum >= 10) {
-      setRound(roundNum + 1);
+    //Check to see if the right answer
+    //If right: Display the congrats modal
+    //If wrong: sorry and display the correct answer
+    //Both cases need to set the question number and possibly the round number,
+    //set roundBegin and questionBegin /End
+
+    if (state.questionNum !== state.numQuestions) {
+      dispatch({ type: 'setQuestionNum', payload: state.questionNum + 1 });
+    } else {
+      if (state.roundNum !== state.numRounds) {
+        dispatch({ type: 'setRoundNum', payload: state.roundNum + 1 });
+        dispatch({ type: 'setQuestionNum', payload: 1 });
+      } else {
+        dispatch({ type: 'resetState' });
+        navigate('Home');
+      }
     }
   };
-
-  useEffect(() => {
-    setQuestion(1);
-  }, [setRound, roundNum]);
 
   return (
     <Screen>
       <View style={styles.container}>
-        <Round roundNum={roundNum} active={false} />
-        <Question questionNum={questionNum} />
-        <AnswerList answerArray={[]} />
+        <Round />
+        <Question questionNum={state.questionNum} />
+        <AnswerList answerArray={state.questions[state.questionNum]} />
         <Button title={'Submit'} onPress={handleSubmit} />
       </View>
     </Screen>

@@ -19,13 +19,17 @@ const gameStack = () => {
         }}
         initialRouteName="HomeScreen"
       >
-        <Stack.Screen options={{ gestureEnabled: true }} name="Home" component={HomeScreen} />
+        <Stack.Screen options={{ gestureEnabled: false }} name="Home" component={HomeScreen} />
         <Stack.Screen
-          options={{ gestureEnabled: true }}
+          options={{ gestureEnabled: false }}
           name="GameSettings"
           component={GameSettingsScreen}
         />
-        <Stack.Screen options={{ gestureEnabled: true }} name="GameScreen" component={GameScreen} />
+        <Stack.Screen
+          options={{ gestureEnabled: false }}
+          name="GameScreen"
+          component={GameScreen}
+        />
       </Stack.Navigator>
     </>
   );

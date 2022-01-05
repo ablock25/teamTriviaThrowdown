@@ -1,31 +1,31 @@
-import React, { FC } from 'react';
+import React from 'react';
 import { StyleSheet } from 'react-native';
 import { AnimatedFade, AnimatedMove } from '@airship/rn-components';
 
 import { View } from '../common/View';
 import { Text } from '../common/Text';
 import { colors, fontSizes, globalStyles, SCREEN_HEIGHT } from '../../styles/globalStyles';
+import { useGame } from '../../context/GameContext';
 
-type Props = { roundNum: number; active: boolean };
-
-export const Round: FC<Props> = ({ roundNum = 1, active = false }) => {
+export const Round = () => {
+  const {
+    state: { roundNum },
+  } = useGame();
   return (
     <>
-      {!active && (
-        <View style={styles.container}>
-          <AnimatedMove
-            startY={-SCREEN_HEIGHT / 8}
-            friction={2}
-            // onEnd={() => {
-            //   setSettled(true);
-            // }}
-          >
-            <AnimatedFade delay={1000} duration={1000}>
-              <Text style={styles.text}>ROUND {roundNum}</Text>
-            </AnimatedFade>
-          </AnimatedMove>
-        </View>
-      )}
+      <View style={styles.container}>
+        <AnimatedMove
+          startY={-SCREEN_HEIGHT / 8}
+          friction={2}
+          // onEnd={() => {
+          //   setSettled(true);
+          // }}
+        >
+          <AnimatedFade delay={1000} duration={1000}>
+            <Text style={styles.text}>ROUND {roundNum}</Text>
+          </AnimatedFade>
+        </AnimatedMove>
+      </View>
     </>
   );
 };
