@@ -9,13 +9,14 @@ import { Text } from '../components/common/Text';
 import { Screen } from '../components/common/Screen';
 import { colors, globalStyles, SCREEN_WIDTH, fontSizes } from '../styles/globalStyles';
 import { getCategories } from '../services/baseService/categoriesService';
-import { Category } from '../types/common';
+import { Category, Question } from '../types/common';
 import { ItemValue } from '@react-native-community/picker/typings/Picker';
 import { useGame } from '../context/GameContext';
+import { getQuestions } from '../services/baseService/questionsService';
 
 export const GameSettingsScreen = () => {
   const { navigate } = useNavigation();
-  const { state, dispatch, fetchQuestions, fetchCategories } = useGame();
+  const { state, dispatch, fetchCategories } = useGame();
   const [roundIndex, setRoundIndex] = useState(0);
   const [questionIndex, setQuestionIndex] = useState(0);
 
@@ -25,6 +26,16 @@ export const GameSettingsScreen = () => {
   useEffect(() => {
     fetchCategories();
   }, []);
+
+  const fetchQuestions = async () => {
+    await getQuestions(state.numRounds * state.numQuestions, state.category)
+      .then((r: Question[]) => {
+        dispatch({ type: 'setQuestions', payload: r });
+      })
+      .catch((error) => {
+        dispatch({ type: 'setError', payload: error.message });
+      });
+  };
 
   const handleBegin = async () => {
     await fetchQuestions();

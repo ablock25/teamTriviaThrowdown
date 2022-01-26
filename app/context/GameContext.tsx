@@ -1,6 +1,5 @@
 import React, { createContext, ReactNode, useContext, useReducer } from 'react';
 import { getCategories } from '../services/baseService/categoriesService';
-import { getQuestions } from '../services/baseService/questionsService';
 import { Category, Question } from '../types/common';
 
 type Action =
@@ -28,7 +27,10 @@ type Action =
       type: 'setRoundNum';
       payload: number;
     }
-  | { type: 'setQuestionNum'; payload: number }
+  | {
+      type: 'setQuestionNum';
+      payload: number;
+    }
   | {
       type: 'setBeginRound';
       payload: boolean;
@@ -57,6 +59,7 @@ type Dispatch = (action: Action) => void;
 type State = {
   categories: Category[];
   questions: Question[];
+  currentQuestionIndex: number;
   numRounds: number;
   numQuestions: number;
   category: string;
@@ -74,7 +77,6 @@ export const GameContext = createContext<
   | {
       state: State;
       dispatch: Dispatch;
-      fetchQuestions: () => Promise<void>;
       fetchCategories: () => Promise<void>;
     }
   | undefined
@@ -83,6 +85,7 @@ export const GameContext = createContext<
 const initialState: State = {
   categories: [],
   questions: [],
+  currentQuestionIndex: 0,
   numRounds: 1,
   numQuestions: 5,
   category: '',
@@ -119,7 +122,7 @@ const GameReducer = (state: State, action: Action): State => {
       return { ...state, roundNum: action.payload };
     }
     case 'setQuestionNum': {
-      return { ...state, questionNum: action.payload };
+      return { ...state, questionNum: action.payload, currentQuestionIndex: action.payload - 1 };
     }
     case 'setBeginRound': {
       return { ...state, beginRound: action.payload };
@@ -140,6 +143,7 @@ const GameReducer = (state: State, action: Action): State => {
       return {
         ...state,
         questions: [],
+        currentQuestionIndex: 0,
         numRounds: 1,
         numQuestions: 5,
         category: '',
@@ -164,18 +168,8 @@ const GameReducer = (state: State, action: Action): State => {
 const GameProvider = ({ children }: GameProviderProps) => {
   const [state, dispatch] = useReducer(GameReducer, initialState);
 
-  const fetchQuestions = async () => {
-    getQuestions(state.numRounds * state.numQuestions, state.category)
-      .then((r) => {
-        dispatch({ type: 'setQuestions', payload: r });
-      })
-      .catch((error) => {
-        dispatch({ type: 'setError', payload: error.message });
-      });
-  };
-
   const fetchCategories = async () => {
-    getCategories()
+    await getCategories()
       .then((r) => {
         dispatch({ type: 'setCategories', payload: r });
       })
@@ -187,7 +181,6 @@ const GameProvider = ({ children }: GameProviderProps) => {
   const value = {
     state,
     dispatch,
-    fetchQuestions,
     fetchCategories,
   };
 

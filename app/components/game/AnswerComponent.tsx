@@ -1,4 +1,4 @@
-import React, { FC, useState } from 'react';
+import React, { FC, useEffect, useState } from 'react';
 import { StyleSheet } from 'react-native';
 import {
   AnimatedFade,
@@ -10,12 +10,19 @@ import { Text } from '../common/Text';
 import { colors, fontSizes, globalStyles } from '../../styles/globalStyles';
 import { View } from '../common/View';
 import { TouchableOpacity } from 'react-native-gesture-handler';
-import { AnswerLetters } from './AnswerList';
+import { Answer, AnswerLetter } from '../../types/common';
 
-type Props = { title: string; selected: boolean; letter: AnswerLetters };
+type Props = {
+  answer: Answer;
+};
 
-export const Answer: FC<Props> = ({ title, selected, letter }) => {
-  const [selectedItem, setSelectedItem] = useState(selected);
+export const AnswerComponent: FC<Props> = ({ answer }) => {
+  const [selected, setSelected] = useState(answer.isSelected);
+
+  useEffect(() => {
+    setSelected(!answer.isSelected);
+  }, [answer]);
+
   return (
     <AnimatedMove>
       <AnimatedFade>
@@ -24,17 +31,14 @@ export const Answer: FC<Props> = ({ title, selected, letter }) => {
             <RadioButton
               toScaleValue={1.5}
               renderComponent={() => (
-                <View style={!selectedItem ? styles.radioButton : styles.radioButtonSelected}>
+                <View style={!selected ? styles.radioButton : styles.radioButtonSelected}>
                   <Text fontSize={20} bold style={{ lineHeight: 25 }}>
-                    {letter}
+                    {answer.id}
                   </Text>
                 </View>
               )}
-              onPress={() => {
-                selectedItem ? setSelectedItem(false) : setSelectedItem(true);
-              }}
             />
-            <Text style={styles.answerText}>{title}</Text>
+            <Text style={styles.answerText}>{answer.text}</Text>
           </View>
         </TouchableOpacity>
       </AnimatedFade>

@@ -11,6 +11,7 @@ import { Round } from '../components/game/Round';
 import { Question } from '../components/game/Question';
 import { AnswerList } from '../components/game/AnswerList';
 import { useGame } from '../context/GameContext';
+import { CountdownCircleTimer } from 'react-native-countdown-circle-timer';
 
 export const GameScreen = () => {
   const { navigate } = useNavigation();
@@ -40,8 +41,26 @@ export const GameScreen = () => {
     <Screen>
       <View style={styles.container}>
         <Round />
+        <CountdownCircleTimer
+          isPlaying
+          duration={20}
+          colors={[
+            ['#00FF00', 0.5],
+            ['#ffff00', 0.5],
+            ['#FF0000', 0.5],
+          ]}
+          size={60}
+          strokeWidth={5}
+          onComplete={() => {
+            return [true, 5000];
+          }}
+        >
+          {({ remainingTime, animatedColor }) => (
+            <Animated.Text style={{ color: animatedColor }}>{remainingTime}</Animated.Text>
+          )}
+        </CountdownCircleTimer>
         <Question questionNum={state.questionNum} />
-        <AnswerList answerArray={state.questions[state.questionNum]} />
+        <AnswerList />
         <Button title={'Submit'} onPress={handleSubmit} />
       </View>
     </Screen>
@@ -57,6 +76,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     justifyContent: 'flex-end',
+    alignItems: 'center',
     margin: globalStyles.standardPadding * 4,
   },
   questionHeaderText: {

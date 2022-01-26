@@ -8,21 +8,19 @@ import { colors, fontSizes, globalStyles, SCREEN_HEIGHT } from '../../styles/glo
 import { useGame } from '../../context/GameContext';
 
 export const Round = () => {
-  const {
-    state: { roundNum },
-  } = useGame();
+  const { state, dispatch } = useGame();
   return (
     <>
       <View style={styles.container}>
         <AnimatedMove
           startY={-SCREEN_HEIGHT / 8}
           friction={2}
-          // onEnd={() => {
-          //   setSettled(true);
-          // }}
+          onEnd={() => {
+            dispatch({ type: 'setBeginRound', payload: true });
+          }}
         >
           <AnimatedFade delay={1000} duration={1000}>
-            <Text style={styles.text}>ROUND {roundNum}</Text>
+            <Text style={styles.text}>ROUND {state.roundNum}</Text>
           </AnimatedFade>
         </AnimatedMove>
       </View>
