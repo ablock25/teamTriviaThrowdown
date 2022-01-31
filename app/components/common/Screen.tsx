@@ -12,7 +12,7 @@ export const Screen: React.FC<Props> = ({ barStyle = 'dark-content', children })
   return (
     <>
       <StatusBar barStyle={barStyle} />
-      <SafeAreaView style={{ flex: 1, backgroundColor: colors.white }}>{children}</SafeAreaView>
+      <SafeAreaView style={{ flex: 1, backgroundColor: colors.offWhite }}>{children}</SafeAreaView>
     </>
   );
 };

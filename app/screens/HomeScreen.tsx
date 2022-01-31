@@ -32,18 +32,22 @@ export const HomeScreen = () => {
       <View style={styles.textWrapper}>
         <AnimatedMove>
           <AnimatedFade delay={4000} duration={1000}>
-            <Text style={styles.welcomeToText}>Welcome</Text>
+            <Text style={styles.triviaSmackdownText}>Welcome</Text>
           </AnimatedFade>
         </AnimatedMove>
         <AnimatedMove>
           <AnimatedFade delay={5000} duration={1000}>
-            <Text style={styles.welcomeToText}>To</Text>
+            <Text style={styles.triviaSmackdownText}>To</Text>
           </AnimatedFade>
         </AnimatedMove>
-
         <AnimatedMove>
           <AnimatedFade delay={6000} duration={2000}>
-            <Text style={styles.triviaSmackdownText}>Trivia SMACKDOWN!</Text>
+            <Text style={styles.triviaSmackdownText}>TRIVIA</Text>
+          </AnimatedFade>
+        </AnimatedMove>
+        <AnimatedMove>
+          <AnimatedFade delay={7000} duration={2000}>
+            <Text style={styles.triviaSmackdownText}>THROWDOWN!</Text>
           </AnimatedFade>
         </AnimatedMove>
       </View>
@@ -102,19 +106,19 @@ const styles = StyleSheet.create({
     elevation: 100,
     fontSize: fontSizes.largeTitle,
     fontWeight: 'bold',
-    textShadowRadius: 10,
+    textShadowRadius: 5,
     textShadowColor: colors.orange,
-    shadowOpacity: 0.8,
+    shadowOpacity: 0.4,
     flexWrap: 'wrap',
     lineHeight: 38,
   },
   welcomeToText: {
     elevation: 100,
-    fontSize: fontSizes.smallTitle,
+    fontSize: fontSizes.largeTitle,
     fontWeight: 'bold',
-    textShadowRadius: 6,
+    textShadowRadius: 5,
     textShadowColor: colors.orange,
-    shadowOpacity: 0.8,
+    shadowOpacity: 0.4,
     flexWrap: 'wrap',
     lineHeight: 30,
   },

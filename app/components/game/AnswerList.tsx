@@ -1,36 +1,21 @@
-import React, { FC, useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { StyleSheet } from 'react-native';
-import { TouchableOpacity } from 'react-native-gesture-handler';
 
 import { View } from '../common/View';
-import { AnswerComponent } from './AnswerComponent';
 import { useGame } from '../../context/GameContext';
 import { Answer, AnswerLetter } from '../../types/common';
 import { getAnswerArray } from '../../utils/gameUtils';
+import {
+  AnimatedFade,
+  AnimatedMove,
+  AnimatedPressable as RadioButton,
+} from '@airship/rn-components';
+import { Text } from '../common/Text';
+import { colors, fontSizes, globalStyles } from '../../styles/globalStyles';
 
 export const AnswerList = () => {
-  const { state } = useGame();
+  const { state, handleAnswerSelection } = useGame();
   const [answers, setAnswers] = useState<Answer[]>([]);
-  const [selectedAnswer, setSelectedAnswer] = useState<AnswerLetter | null>(null);
-
-  const handleAnswerSelection = (answer: Answer) => {
-    switch (answer.id) {
-      case AnswerLetter.A:
-        setSelectedAnswer(AnswerLetter.A);
-        break;
-      case AnswerLetter.B:
-        setSelectedAnswer(AnswerLetter.B);
-        break;
-      case AnswerLetter.C:
-        setSelectedAnswer(AnswerLetter.C);
-        break;
-      case AnswerLetter.D:
-        setSelectedAnswer(AnswerLetter.D);
-        break;
-      default:
-        break;
-    }
-  };
 
   useEffect(() => {
     if (state.questionNum <= state.numQuestions && state.currentQuestionIndex !== 0) {
@@ -45,51 +30,104 @@ export const AnswerList = () => {
       setAnswers(res);
     });
   }, []);
-  console.log(answers);
 
   return (
     <View style={styles.container}>
       <View style={styles.container}>
-        <TouchableOpacity onPress={handleAnswerSelection}>
-          <AnswerComponent
-            answer={{
-              id: AnswerLetter.A,
-              text: answers[0]?.text,
-              isCorrect: answers[0]?.isCorrect,
-              isSelected: selectedAnswer === AnswerLetter.A,
-            }}
-          />
-        </TouchableOpacity>
-        <TouchableOpacity onPress={handleAnswerSelection}>
-          <AnswerComponent
-            answer={{
-              id: AnswerLetter.B,
-              text: answers[1]?.text,
-              isCorrect: answers[1]?.isCorrect,
-              isSelected: selectedAnswer === AnswerLetter.B,
-            }}
-          />
-        </TouchableOpacity>
-        <TouchableOpacity onPress={handleAnswerSelection}>
-          <AnswerComponent
-            answer={{
-              id: AnswerLetter.C,
-              text: answers[2]?.text,
-              isCorrect: answers[2]?.isCorrect,
-              isSelected: selectedAnswer === AnswerLetter.C,
-            }}
-          />
-        </TouchableOpacity>
-        <TouchableOpacity onPress={handleAnswerSelection}>
-          <AnswerComponent
-            answer={{
-              id: AnswerLetter.D,
-              text: answers[3]?.text,
-              isCorrect: answers[3]?.isCorrect,
-              isSelected: selectedAnswer === AnswerLetter.D,
-            }}
-          />
-        </TouchableOpacity>
+        <AnimatedMove>
+          <AnimatedFade>
+            <View row style={{ alignItems: 'center' }}>
+              <RadioButton
+                toScaleValue={3}
+                onPress={() => {
+                  handleAnswerSelection(answers[0]);
+                }}
+                style={
+                  answers[0] !== state.selectedAnswer
+                    ? styles.radioButton
+                    : styles.radioButtonSelected
+                }
+                renderComponent={() => (
+                  <Text fontSize={fontSizes.qAText} bold color={colors.offWhite}>
+                    {AnswerLetter.A}
+                  </Text>
+                )}
+              />
+              <Text style={styles.answerText}>{answers[0]?.text}</Text>
+            </View>
+          </AnimatedFade>
+        </AnimatedMove>
+
+        <AnimatedMove>
+          <AnimatedFade>
+            <View row style={{ alignItems: 'center' }}>
+              <RadioButton
+                toScaleValue={3}
+                onPress={() => {
+                  handleAnswerSelection(answers[1]);
+                }}
+                style={
+                  answers[1] !== state.selectedAnswer
+                    ? styles.radioButton
+                    : styles.radioButtonSelected
+                }
+                renderComponent={() => (
+                  <Text fontSize={fontSizes.qAText} bold color={colors.offWhite}>
+                    {AnswerLetter.B}
+                  </Text>
+                )}
+              />
+              <Text style={styles.answerText}>{answers[1]?.text}</Text>
+            </View>
+          </AnimatedFade>
+        </AnimatedMove>
+        <AnimatedMove>
+          <AnimatedFade>
+            <View row style={{ alignItems: 'center' }}>
+              <RadioButton
+                toScaleValue={3}
+                onPress={() => {
+                  handleAnswerSelection(answers[2]);
+                }}
+                style={
+                  answers[2] !== state.selectedAnswer
+                    ? styles.radioButton
+                    : styles.radioButtonSelected
+                }
+                renderComponent={() => (
+                  <Text fontSize={fontSizes.qAText} bold color={colors.offWhite}>
+                    {AnswerLetter.C}
+                  </Text>
+                )}
+              />
+              <Text style={styles.answerText}>{answers[2]?.text}</Text>
+            </View>
+          </AnimatedFade>
+        </AnimatedMove>
+        <AnimatedMove>
+          <AnimatedFade>
+            <View row style={{ alignItems: 'center' }}>
+              <RadioButton
+                toScaleValue={3}
+                onPress={() => {
+                  handleAnswerSelection(answers[3]);
+                }}
+                colorTransitionDuration={100}
+                style={
+                  answers[3] !== state.selectedAnswer
+                    ? styles.radioButton
+                    : styles.radioButtonSelected
+                }
+                renderComponent={() => (
+                  <Text fontSize={fontSizes.qAText} bold color={colors.offWhite}>
+                    {AnswerLetter.D}
+                  </Text>
+                )}
+              />
+              <Text style={styles.answerText}>{answers[3]?.text}</Text>
+            </View>
+          </AnimatedFade>
+        </AnimatedMove>
       </View>
     </View>
   );
@@ -99,5 +137,45 @@ const styles = StyleSheet.create({
     flex: 3,
     justifyContent: 'space-evenly',
     width: '100%',
+  },
+  answerText: {
+    fontSize: fontSizes.qAText,
+    fontWeight: 'bold',
+    lineHeight: 20,
+  },
+  radioButton: {
+    minHeight: 32,
+    maxWidth: 32,
+    minWidth: 32,
+    maxHeight: 32,
+    marginRight: globalStyles.standardPadding * 2,
+    backgroundColor: colors.orange,
+    borderRadius: 50,
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderWidth: 1,
+    borderColor: colors.gray,
+    paddingLeft: 1,
+  },
+  radioButtonSelected: {
+    minHeight: 32,
+    maxWidth: 32,
+    minWidth: 32,
+    maxHeight: 32,
+    marginRight: globalStyles.standardPadding * 2,
+    backgroundColor: colors.gray,
+    borderRadius: 50,
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderWidth: 1,
+    borderColor: colors.gray,
+    paddingBottom: 1,
+    paddingLeft: 1,
+  },
+  rowStyle: {
+    alignItems: 'flex-start',
+    flexDirection: 'row',
+    justifyContent: 'flex-start',
+    margin: globalStyles.standardPadding,
   },
 });
