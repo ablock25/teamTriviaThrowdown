@@ -8,9 +8,9 @@ export const LINE_HEIGHT_MULTIPLIER = 1.7;
 
 export const colors = {
   orange: '#D72B18',
-  offWhite: '#BDBEAC',
-  gray: '#393E45',
-  white: '#F4F5F4',
+  offWhite: '#D4D4D4',
+  lightGray: '#BDBBB8',
+  gray: '#323647',
   dark: '#0F1216',
 };
 

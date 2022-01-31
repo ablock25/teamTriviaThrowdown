@@ -4,14 +4,24 @@ export type Category = {
 };
 
 export type Answer = {
-  id: number;
+  id?: AnswerLetter;
   text: string;
   isCorrect: boolean;
   isSelected: boolean;
 };
 
 export type Question = {
-  num: number;
-  answers: Answer[];
+  category: string;
   correctAnswer: string;
+  id: number;
+  incorrectAnswers: string[];
+  question: string;
+  type: string;
 };
+
+export enum AnswerLetter {
+  A = 'A',
+  B = 'B',
+  C = 'C',
+  D = 'D',
+}

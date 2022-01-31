@@ -1,7 +1,6 @@
 import React, { createContext, ReactNode, useContext, useReducer } from 'react';
 import { getCategories } from '../services/baseService/categoriesService';
-import { getQuestions } from '../services/baseService/questionsService';
-import { Category, Question } from '../types/common';
+import { Answer, Category, Question } from '../types/common';
 
 type Action =
   | {
@@ -28,22 +27,29 @@ type Action =
       type: 'setRoundNum';
       payload: number;
     }
-  | { type: 'setQuestionNum'; payload: number }
   | {
-      type: 'setBeginRound';
+      type: 'setQuestionNum';
+      payload: number;
+    }
+  | {
+      type: 'setRoundActive';
       payload: boolean;
     }
   | {
-      type: 'setBeginQuestion';
+      type: 'setQuestionActive';
       payload: boolean;
     }
   | {
-      type: 'setEndRound';
-      payload: boolean;
+      type: 'setSelectedAnswer';
+      payload: Answer;
     }
   | {
-      type: 'setEndQuestion';
-      payload: boolean;
+      type: 'setNumCorrect';
+      payload: number;
+    }
+  | {
+      type: 'setNumIncorrect';
+      payload: number;
     }
   | {
       type: 'resetState';
@@ -57,15 +63,17 @@ type Dispatch = (action: Action) => void;
 type State = {
   categories: Category[];
   questions: Question[];
+  currentQuestionIndex: number;
   numRounds: number;
   numQuestions: number;
   category: string;
   roundNum: number;
   questionNum: number;
-  beginRound: boolean;
-  beginQuestion: boolean;
-  endRound: boolean;
-  endQuestion: boolean;
+  roundActive: boolean;
+  questionActive: boolean;
+  selectedAnswer?: Answer;
+  numCorrect: number;
+  numIncorrect: number;
   error: string;
 };
 type GameProviderProps = { children: ReactNode };
@@ -74,8 +82,9 @@ export const GameContext = createContext<
   | {
       state: State;
       dispatch: Dispatch;
-      fetchQuestions: () => Promise<void>;
       fetchCategories: () => Promise<void>;
+      handleAnswerSelection: (answer: Answer) => void;
+      handleAnswerSubmit: () => void;
     }
   | undefined
 >(undefined);
@@ -83,15 +92,17 @@ export const GameContext = createContext<
 const initialState: State = {
   categories: [],
   questions: [],
+  currentQuestionIndex: 0,
   numRounds: 1,
   numQuestions: 5,
   category: '',
   roundNum: 1,
   questionNum: 1,
-  beginRound: false,
-  beginQuestion: false,
-  endRound: false,
-  endQuestion: false,
+  roundActive: false,
+  questionActive: false,
+  selectedAnswer: undefined,
+  numCorrect: 0,
+  numIncorrect: 0,
   error: '',
 };
 
@@ -119,36 +130,41 @@ const GameReducer = (state: State, action: Action): State => {
       return { ...state, roundNum: action.payload };
     }
     case 'setQuestionNum': {
-      return { ...state, questionNum: action.payload };
+      return { ...state, questionNum: action.payload, currentQuestionIndex: action.payload - 1 };
     }
-    case 'setBeginRound': {
-      return { ...state, beginRound: action.payload };
+    case 'setRoundActive': {
+      return { ...state, roundActive: action.payload };
     }
-    case 'setBeginQuestion': {
+    case 'setQuestionActive': {
       return {
         ...state,
-        beginQuestion: action.payload,
+        questionActive: action.payload,
       };
     }
-    case 'setEndRound': {
-      return { ...state, endRound: action.payload };
+    case 'setSelectedAnswer': {
+      return { ...state, selectedAnswer: action.payload };
     }
-    case 'setEndQuestion': {
-      return { ...state, endQuestion: action.payload };
+    case 'setNumCorrect': {
+      return { ...state, numCorrect: action.payload };
+    }
+    case 'setNumIncorrect': {
+      return { ...state, numIncorrect: action.payload };
     }
     case 'resetState': {
       return {
         ...state,
         questions: [],
+        currentQuestionIndex: 0,
         numRounds: 1,
         numQuestions: 5,
         category: '',
         roundNum: 1,
         questionNum: 1,
-        beginRound: false,
-        beginQuestion: false,
-        endRound: false,
-        endQuestion: false,
+        roundActive: false,
+        questionActive: false,
+        selectedAnswer: undefined,
+        numCorrect: 0,
+        numIncorrect: 0,
         error: '',
       };
     }
@@ -156,7 +172,7 @@ const GameReducer = (state: State, action: Action): State => {
       return { ...state, error: action.payload };
     }
     default: {
-      throw new Error(`Unhandled action type: ${action.type}`);
+      throw new Error(`Unhandled action type: ${action}`);
     }
   }
 };
@@ -164,18 +180,8 @@ const GameReducer = (state: State, action: Action): State => {
 const GameProvider = ({ children }: GameProviderProps) => {
   const [state, dispatch] = useReducer(GameReducer, initialState);
 
-  const fetchQuestions = async () => {
-    getQuestions(state.numRounds * state.numQuestions, state.category)
-      .then((r) => {
-        dispatch({ type: 'setQuestions', payload: r });
-      })
-      .catch((error) => {
-        dispatch({ type: 'setError', payload: error.message });
-      });
-  };
-
   const fetchCategories = async () => {
-    getCategories()
+    await getCategories()
       .then((r) => {
         dispatch({ type: 'setCategories', payload: r });
       })
@@ -184,11 +190,43 @@ const GameProvider = ({ children }: GameProviderProps) => {
       });
   };
 
+  const handleAnswerSelection = (answer: Answer) => {
+    dispatch({ type: 'setSelectedAnswer', payload: answer });
+  };
+
+  const checkAnswer = () => {
+    if (state.selectedAnswer?.isCorrect) {
+      dispatch({ type: 'setNumCorrect', payload: state.numCorrect + 1 });
+    }
+    dispatch({ type: 'setNumIncorrect', payload: state.numIncorrect + 1 });
+  };
+
+  const handleNextQuestion = () => {
+    if (state.questionNum !== state.numQuestions) {
+      dispatch({ type: 'setQuestionActive', payload: false });
+      dispatch({ type: 'setQuestionNum', payload: state.questionNum + 1 });
+    } else {
+      if (state.roundNum !== state.numRounds) {
+        dispatch({ type: 'setRoundActive', payload: false });
+        dispatch({ type: 'setRoundNum', payload: state.roundNum + 1 });
+        dispatch({ type: 'setQuestionNum', payload: 1 });
+      } else {
+        dispatch({ type: 'resetState' });
+      }
+    }
+  };
+
+  const handleAnswerSubmit = () => {
+    checkAnswer();
+    handleNextQuestion();
+  };
+
   const value = {
     state,
     dispatch,
-    fetchQuestions,
     fetchCategories,
+    handleAnswerSelection,
+    handleAnswerSubmit,
   };
 
   return <GameContext.Provider value={value}>{children}</GameContext.Provider>;

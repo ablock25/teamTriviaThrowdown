@@ -8,14 +8,14 @@ import { View } from '../components/common/View';
 import { Text } from '../components/common/Text';
 import { Screen } from '../components/common/Screen';
 import { colors, globalStyles, SCREEN_WIDTH, fontSizes } from '../styles/globalStyles';
-import { getCategories } from '../services/baseService/categoriesService';
-import { Category } from '../types/common';
+import { Category, Question } from '../types/common';
 import { ItemValue } from '@react-native-community/picker/typings/Picker';
 import { useGame } from '../context/GameContext';
+import { getQuestions } from '../services/baseService/questionsService';
 
 export const GameSettingsScreen = () => {
   const { navigate } = useNavigation();
-  const { state, dispatch, fetchQuestions, fetchCategories } = useGame();
+  const { state, dispatch, fetchCategories } = useGame();
   const [roundIndex, setRoundIndex] = useState(0);
   const [questionIndex, setQuestionIndex] = useState(0);
 
@@ -23,8 +23,18 @@ export const GameSettingsScreen = () => {
   const NUM_QUESTIONS = ['5', '6', '7', '8', '9', '10'];
 
   useEffect(() => {
-    fetchCategories();
+    fetchCategories().then((result) => result);
   }, []);
+
+  const fetchQuestions = async () => {
+    await getQuestions(state.numRounds * state.numQuestions, state.category)
+      .then((r: Question[]) => {
+        dispatch({ type: 'setQuestions', payload: r });
+      })
+      .catch((error) => {
+        dispatch({ type: 'setError', payload: error.message });
+      });
+  };
 
   const handleBegin = async () => {
     await fetchQuestions();
@@ -45,6 +55,7 @@ export const GameSettingsScreen = () => {
               dispatch({ type: 'setNumRounds', payload: parseInt(NUM_ROUNDS[index]) });
             }}
             currentIndex={roundIndex}
+            textStyle={{ color: colors.offWhite }}
             activeSegmentBackgroundColor={colors.orange}
             containerStyle={styles.segmentContainer}
           />
@@ -55,6 +66,7 @@ export const GameSettingsScreen = () => {
           </Text>
           <SegmentedControl
             tabs={NUM_QUESTIONS}
+            textStyle={{ color: colors.offWhite }}
             onChange={(index) => {
               setQuestionIndex(index);
               dispatch({ type: 'setNumQuestions', payload: parseInt(NUM_QUESTIONS[index]) });
@@ -70,10 +82,17 @@ export const GameSettingsScreen = () => {
           </Text>
           <Picker
             selectedValue={state.category}
+            itemStyle={{
+              fontSize: fontSizes.buttonText,
+              fontWeight: '600',
+              fontStyle: 'italic',
+              marginVertical: 40,
+            }}
             onValueChange={(itemValue: ItemValue) => {
               dispatch({ type: 'setCategory', payload: itemValue.toString() });
             }}
           >
+            {<Picker.Item label={'All Categories'} value={''} key={0} />}
             {state.categories.map((item: Category, index: number) => {
               return <Picker.Item label={item.label} value={item.value} key={index} />; //if you have a bunch of keys value pair
             })}
@@ -103,7 +122,7 @@ const styles = StyleSheet.create({
     width: SCREEN_WIDTH - globalStyles.standardPadding * 2,
   },
   segmentContainer: {
-    backgroundColor: colors.white,
+    backgroundColor: colors.gray,
     borderRadius: 10,
   },
 });
