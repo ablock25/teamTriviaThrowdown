@@ -44,7 +44,7 @@ export const StatsScreen = () => {
         <View style={styles.header}>
           <Text fontSize={fontSizes.header}>Last Game Results</Text>
         </View>
-        <View>
+        <View style={{ flex: 1 }}>
           <Text fontSize={fontSizes.subHeaderText}>Round</Text>
           <SegmentedControl
             tabs={NUM_ROUNDS}
@@ -55,9 +55,10 @@ export const StatsScreen = () => {
           />
           <FlatList data={state.lastGame} horizontal renderItem={renderQuestion} />
         </View>
-        <Text>Best Categories</Text>
-        <Text>Worst Categories</Text>
-        <Text>Previous Game Results</Text>
+        <View style={{ alignItems: 'center' }}>
+          <Text fontSize={fontSizes.header}>Lifetime Results</Text>
+          <Text fontSize={fontSizes.header}>Results by Category</Text>
+        </View>
       </View>
     </Screen>
   );
