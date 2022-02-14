@@ -8,7 +8,7 @@ import { View } from '../components/common/View';
 import { Text } from '../components/common/Text';
 import { Screen } from '../components/common/Screen';
 import { colors, globalStyles, SCREEN_WIDTH, fontSizes } from '../styles/globalStyles';
-import { Category, Question } from '../types/common';
+import { Category, NUM_QUESTIONS, NUM_ROUNDS, Question } from '../types/common';
 import { ItemValue } from '@react-native-community/picker/typings/Picker';
 import { useGame } from '../context/GameContext';
 import { getQuestions } from '../services/baseService/questionsService';
@@ -18,9 +18,6 @@ export const GameSettingsScreen = () => {
   const { state, dispatch, fetchCategories } = useGame();
   const [roundIndex, setRoundIndex] = useState(0);
   const [questionIndex, setQuestionIndex] = useState(0);
-
-  const NUM_ROUNDS = ['1', '2', '3'];
-  const NUM_QUESTIONS = ['5', '6', '7', '8', '9', '10'];
 
   useEffect(() => {
     fetchCategories().then((result) => result);

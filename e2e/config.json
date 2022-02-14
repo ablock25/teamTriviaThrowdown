@@ -4,6 +4,9 @@
     "testRunner": "jest-circus/runner",
     "testTimeout": 120000,
     "testRegex": "\\.e2e\\.js$",
+    "transform": {
+        "\\.tsx?$": "ts-jest"
+      },
     "reporters": ["detox/runners/jest/streamlineReporter"],
     "verbose": true
 }
