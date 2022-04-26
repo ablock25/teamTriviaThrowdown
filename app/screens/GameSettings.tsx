@@ -20,12 +20,13 @@ export const GameSettingsScreen = () => {
   const [questionIndex, setQuestionIndex] = useState(0);
 
   useEffect(() => {
-    fetchCategories().then((result) => result);
+    fetchCategories();
   }, []);
 
   const fetchQuestions = async () => {
     await getQuestions(state.numRounds * state.numQuestions, state.category)
       .then((r: Question[]) => {
+        console.log({ r });
         dispatch({ type: 'setQuestions', payload: r });
       })
       .catch((error) => {
@@ -91,7 +92,7 @@ export const GameSettingsScreen = () => {
           >
             {<Picker.Item label={'All Categories'} value={''} key={0} />}
             {state.categories.map((item: Category, index: number) => {
-              return <Picker.Item label={item.label} value={item.value} key={index} />; //if you have a bunch of keys value pair
+              return <Picker.Item label={item.label} value={item.slugs[0]} key={index} />;
             })}
           </Picker>
         </View>

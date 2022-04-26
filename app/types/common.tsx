@@ -3,7 +3,7 @@ export const NUM_QUESTIONS = ['5', '6', '7', '8', '9', '10'];
 
 export type Category = {
   label: string;
-  value: string;
+  slugs: string[];
 };
 
 export type Answer = {

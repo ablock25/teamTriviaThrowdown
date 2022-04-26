@@ -183,6 +183,7 @@ const GameProvider = ({ children }: GameProviderProps) => {
   const fetchCategories = async () => {
     await getCategories()
       .then((r) => {
+        console.log({ r });
         dispatch({ type: 'setCategories', payload: r });
       })
       .catch((error) => {
