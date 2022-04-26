@@ -60,7 +60,7 @@ type Action =
     };
 
 type Dispatch = (action: Action) => void;
-type State = {
+export type GameState = {
   categories: Category[];
   questions: Question[];
   currentQuestionIndex: number;
@@ -80,7 +80,7 @@ type GameProviderProps = { children: ReactNode };
 
 export const GameContext = createContext<
   | {
-      state: State;
+      state: GameState;
       dispatch: Dispatch;
       fetchCategories: () => Promise<void>;
       handleAnswerSelection: (answer: Answer) => void;
@@ -89,7 +89,7 @@ export const GameContext = createContext<
   | undefined
 >(undefined);
 
-const initialState: State = {
+const initialState: GameState = {
   categories: [],
   questions: [],
   currentQuestionIndex: 0,
@@ -106,7 +106,7 @@ const initialState: State = {
   error: '',
 };
 
-const GameReducer = (state: State, action: Action): State => {
+const GameReducer = (state: GameState, action: Action): GameState => {
   switch (action.type) {
     case 'setCategories': {
       return { ...state, categories: action.payload };
@@ -235,7 +235,7 @@ const GameProvider = ({ children }: GameProviderProps) => {
 const useGame = () => {
   const context = useContext(GameContext);
   if (context === undefined) {
-    throw new Error('useAuth must be used within an AuthProvider');
+    throw new Error('useGame must be used within an GameProvider');
   }
   return context;
 };

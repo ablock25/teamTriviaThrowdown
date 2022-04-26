@@ -4,6 +4,7 @@ import ErrorBoundary from 'react-native-error-boundary';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { MainNavigator } from './navigation/MainNavigator';
 import { GameProvider } from './context/GameContext';
+import { StatsContext, StatsProvider } from './context/StatsContext';
 
 const applicationErrorHandler = (error: Error, stackTrace: string) => {
   if (__DEV__) {
@@ -18,9 +19,11 @@ const App = () => {
     <ErrorBoundary onError={applicationErrorHandler}>
       <SafeAreaProvider>
         <GameProvider>
-          <NavigationContainer>
-            <MainNavigator />
-          </NavigationContainer>
+          <StatsProvider>
+            <NavigationContainer>
+              <MainNavigator />
+            </NavigationContainer>
+          </StatsProvider>
         </GameProvider>
       </SafeAreaProvider>
     </ErrorBoundary>
