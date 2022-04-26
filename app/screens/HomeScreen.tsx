@@ -64,14 +64,20 @@ export const HomeScreen = () => {
           <AnimatedFade duration={3000}>
             <Blimp containerStyle={styles.bottomIcon} size={150} color={colors.dark} />
             {settled && (
-              <>
+              <View style={{ flex: 1, justifyContent: 'space-evenly' }}>
                 <Button
-                  title={'start'}
+                  title={'Stats'}
+                  onPress={() => {
+                    navigate('Stats');
+                  }}
+                />
+                <Button
+                  title={'Start Game'}
                   onPress={() => {
                     navigate('GameSettings');
                   }}
                 />
-              </>
+              </View>
             )}
           </AnimatedFade>
         </AnimatedMove>

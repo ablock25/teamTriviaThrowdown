@@ -4,6 +4,7 @@ import { CardStyleInterpolators, createStackNavigator } from '@react-navigation/
 import { HomeScreen } from '../screens/HomeScreen';
 import { GameSettingsScreen } from '../screens/GameSettings';
 import { GameScreen } from '../screens/GameScreen';
+import { StatsScreen } from '../screens/StatsScreen';
 
 const Stack = createStackNavigator();
 
@@ -20,6 +21,7 @@ const gameStack = () => {
         initialRouteName="HomeScreen"
       >
         <Stack.Screen options={{ gestureEnabled: false }} name="Home" component={HomeScreen} />
+        <Stack.Screen options={{ gestureEnabled: false }} name="Stats" component={StatsScreen} />
         <Stack.Screen
           options={{ gestureEnabled: false }}
           name="GameSettings"
