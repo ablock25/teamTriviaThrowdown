@@ -1,5 +1,5 @@
-import React, { useEffect, useRef } from 'react';
-import { Animated, Button, StyleSheet } from 'react-native';
+import React, { useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
+import { Animated, Button, StyleSheet, Text } from 'react-native';
 import { AnimatedFade, AnimatedMove } from '@airship/rn-components';
 import { useNavigation } from '@react-navigation/core';
 
@@ -16,101 +16,102 @@ import { Round } from '../components/game/Round';
 import { Question } from '../components/game/Question';
 import { AnswerList } from '../components/game/AnswerList';
 import { useGame } from '../context/GameContext';
-import { CountdownCircleTimer } from 'react-native-countdown-circle-timer';
+import { ColorHex, CountdownCircleTimer, TimeProps } from 'react-native-countdown-circle-timer';
+import {
+  BottomSheetModalProvider,
+  BottomSheetModal,
+  BottomSheetBackdrop,
+} from '@gorhom/bottom-sheet';
 
 export const GameScreen = () => {
-  const { state, dispatch, handleAnswerSubmit } = useGame();
+  const { state, handleAnswerSubmit } = useGame();
   const { navigate } = useNavigation();
-  const correctRef = useRef(0);
-  const incorrectRef = useRef(0);
+  const [modalShowing, setModalShowing] = useState(false);
+  const bottomSheetRef = useRef<BottomSheetModal>(null);
+  const snapPoints = useMemo(() => ['80%'], []);
+
+  const handleQuestionComplete = () => {
+    setModalShowing(!modalShowing);
+  };
+
+  useEffect(() => {
+    state.numCorrect > 0 || state.numIncorrect > 0 ? setModalShowing(!modalShowing) : null;
+  }, [state.numCorrect, state.numIncorrect]);
+
+  useEffect(() => {
+    if (modalShowing) {
+      console.log('MODAL PRESENT!');
+      bottomSheetRef.current?.present();
+    } else {
+      console.log('MODAL CLOSE!');
+      bottomSheetRef.current?.close();
+    }
+  }, [modalShowing]);
 
   useEffect(() => {
     if (state.questions?.length === 0) {
-      //TODO: Navigate to Result Screen
       navigate('Home');
     }
   }, [state.questions]);
 
-  useEffect(() => {
-    if (correctRef.current !== state.numCorrect) {
-      //Await display the congrats modal
-      correctRef.current = state.numCorrect;
-    }
-    if (incorrectRef.current !== state.numIncorrect) {
-      //Await display the sad modal
-      incorrectRef.current = state.numIncorrect;
-    }
-  }, [state.numCorrect, state.numIncorrect]);
-
   return (
     <Screen>
-      <View style={styles.container}>
-        <AnimatedMove
-          startY={-SCREEN_HEIGHT / 8}
-          friction={2}
-          onEnd={() => {
-            dispatch({ type: 'setRoundActive', payload: true });
-          }}
-        >
-          <AnimatedFade delay={1000} duration={1000}>
-            <Round />
-          </AnimatedFade>
-        </AnimatedMove>
-        <View style={{ backgroundColor: colors.dark, borderRadius: 50 }}>
+      <Round />
+      <View style={styles.countdown}>
+        {!modalShowing && (
           <CountdownCircleTimer
-            isPlaying
+            key={`${state.questionNum}`}
+            isPlaying={state.questionActive}
             duration={20}
-            colors={[
-              ['#00FF00', 0.5],
-              ['#ffff00', 0.5],
-              ['#FF0000', 0.5],
-            ]}
-            size={80}
-            ariaLabel={'Test'}
-            strokeWidth={10}
-            trailColor={colors.dark}
+            colors={['#00FF00', '#ffff00', '#FF0000']}
+            colorsTime={[15, 10, 0]}
+            size={60}
+            strokeWidth={5}
+            trailColor={colors.darkBlueGray as ColorHex}
             onComplete={() => {
-              return [true, 5000];
+              handleAnswerSubmit();
             }}
           >
-            {({ remainingTime, animatedColor }) => (
-              <AnimatedMove startY={-5} toY={0}>
-                <Animated.Text
-                  style={{
-                    color: animatedColor,
-                    fontWeight: 'bold',
-                    fontSize: fontSizes.buttonText,
-                  }}
-                >
-                  {remainingTime}
-                </Animated.Text>
-              </AnimatedMove>
+            {(props: TimeProps) => (
+              <Animated.Text
+                style={{
+                  color: props.color,
+                  fontWeight: 'bold',
+                  fontSize: fontSizes.buttonText,
+                }}
+              >
+                {props.remainingTime}
+              </Animated.Text>
             )}
           </CountdownCircleTimer>
-        </View>
-        <AnimatedMove
-          style={styles.questionContainer}
-          startX={-SCREEN_WIDTH}
-          friction={2}
-          delay={2000}
-          onEnd={() => {
-            dispatch({ type: 'setQuestionActive', payload: true });
-          }}
-        >
-          <AnimatedFade delay={1000} duration={1000}>
-            <Question questionNum={state.questionNum} />
-          </AnimatedFade>
-        </AnimatedMove>
-        <AnswerList />
-        <Button title={'Submit'} onPress={handleAnswerSubmit} />
+        )}
       </View>
+      <Question questionNum={state.questionNum} numQuestions={state.numQuestions} />
+      <AnswerList />
+      <Button title={'Submit'} onPress={handleAnswerSubmit} />
+      {modalShowing && (
+        <BottomSheetModalProvider>
+          <BottomSheetModal
+            ref={bottomSheetRef}
+            snapPoints={snapPoints}
+            backdropComponent={BottomSheetBackdrop}
+            animationConfigs={{ duration: 400 }}
+            style={{ ...globalStyles.shadow }}
+            onDismiss={handleQuestionComplete}
+          >
+            <View style={styles.modalWrapper}>
+              <Text>THIS IS MODAL</Text>
+            </View>
+          </BottomSheetModal>
+        </BottomSheetModalProvider>
+      )}
     </Screen>
   );
 };
 
 const styles = StyleSheet.create({
   answerText: {
-    fontSize: fontSizes.qAText,
+    fontSize: fontSizes.qText,
     fontWeight: 'bold',
     flexWrap: 'wrap',
   },
@@ -120,13 +121,25 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     margin: globalStyles.standardPadding * 4,
   },
+  countdown: {
+    borderRadius: 50,
+    marginBottom: globalStyles.standardPadding * 2,
+    backgroundColor: colors.darkBlueGray,
+    width: 60,
+    alignSelf: 'center',
+  },
+  modalWrapper: {
+    paddingHorizontal: globalStyles.standardPadding * 4,
+    marginBottom: globalStyles.standardPadding * 2,
+    paddingVertical: globalStyles.standardPadding * 2,
+  },
   questionContainer: {
     justifyContent: 'center',
     alignItems: 'center',
     marginVertical: globalStyles.standardPadding * 4,
     backgroundColor: colors.lightGray,
     borderRadius: globalStyles.standardBorderRadius,
-    shadowColor: colors.dark,
+    shadowColor: colors.black,
     shadowRadius: 5,
     shadowOpacity: 0.6,
     alignContent: 'stretch',
@@ -143,7 +156,7 @@ const styles = StyleSheet.create({
     padding: globalStyles.standardPadding * 2,
   },
   questionText: {
-    fontSize: fontSizes.qAText,
+    fontSize: fontSizes.qText,
     fontWeight: '500',
     padding: globalStyles.standardPadding * 2,
   },

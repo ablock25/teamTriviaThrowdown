@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Button, StyleSheet } from 'react-native';
 import { SegmentedControl } from '@airship/rn-components';
-import { Picker } from '@react-native-community/picker';
+import { Picker } from '@react-native-picker/picker';
 import { useNavigation } from '@react-navigation/core';
 
 import { View } from '../components/common/View';
@@ -9,9 +9,9 @@ import { Text } from '../components/common/Text';
 import { Screen } from '../components/common/Screen';
 import { colors, globalStyles, SCREEN_WIDTH, fontSizes } from '../styles/globalStyles';
 import { Category, NUM_QUESTIONS, NUM_ROUNDS, Question } from '../types/common';
-import { ItemValue } from '@react-native-community/picker/typings/Picker';
 import { useGame } from '../context/GameContext';
 import { getQuestions } from '../services/baseService/questionsService';
+import { ItemValue } from '@react-native-picker/picker/typings/Picker';
 
 export const GameSettingsScreen = () => {
   const { navigate } = useNavigation();

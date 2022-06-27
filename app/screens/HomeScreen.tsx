@@ -25,7 +25,7 @@ export const HomeScreen = () => {
           }}
         >
           <AnimatedFade duration={3000}>
-            <Blimp containerStyle={styles.topIcon} size={150} />
+            <Blimp containerStyle={styles.topIcon} size={150} color={colors.darkOrange} />
           </AnimatedFade>
         </AnimatedMove>
       </View>
@@ -62,7 +62,7 @@ export const HomeScreen = () => {
           }}
         >
           <AnimatedFade duration={3000}>
-            <Blimp containerStyle={styles.bottomIcon} size={150} color={colors.dark} />
+            <Blimp containerStyle={styles.bottomIcon} size={150} color={colors.darkBlueGray} />
             {settled && (
               <View style={{ flex: 1, justifyContent: 'space-evenly' }}>
                 <Button

@@ -202,15 +202,15 @@ const GameProvider = ({ children }: GameProviderProps) => {
     dispatch({ type: 'setNumIncorrect', payload: state.numIncorrect + 1 });
   };
 
-  const handleNextQuestion = () => {
+  const handleNextQuestion = async () => {
     if (state.questionNum !== state.numQuestions) {
       dispatch({ type: 'setQuestionActive', payload: false });
       dispatch({ type: 'setQuestionNum', payload: state.questionNum + 1 });
     } else {
       if (state.roundNum !== state.numRounds) {
-        dispatch({ type: 'setRoundActive', payload: false });
-        dispatch({ type: 'setRoundNum', payload: state.roundNum + 1 });
-        dispatch({ type: 'setQuestionNum', payload: 1 });
+        await dispatch({ type: 'setRoundActive', payload: false });
+        await dispatch({ type: 'setRoundNum', payload: state.roundNum + 1 });
+        await dispatch({ type: 'setQuestionNum', payload: 1 });
       } else {
         dispatch({ type: 'resetState' });
       }
