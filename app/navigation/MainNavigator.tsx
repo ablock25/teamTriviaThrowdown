@@ -5,6 +5,7 @@ import { HomeScreen } from '../screens/HomeScreen';
 import { GameSettingsScreen } from '../screens/GameSettings';
 import { GameScreen } from '../screens/GameScreen';
 import { StatsScreen } from '../screens/StatsScreen';
+import { CalendarScreen } from '../screens/CalendarScreen';
 
 const Stack = createStackNavigator();
 
@@ -18,8 +19,9 @@ const gameStack = () => {
           cardStyleInterpolator: CardStyleInterpolators.forHorizontalIOS,
           gestureDirection: 'horizontal',
         }}
-        initialRouteName="HomeScreen"
+        initialRouteName="Calendar"
       >
+        <Stack.Screen name="Calendar" component={CalendarScreen} />
         <Stack.Screen options={{ gestureEnabled: false }} name="Home" component={HomeScreen} />
         <Stack.Screen options={{ gestureEnabled: false }} name="Stats" component={StatsScreen} />
         <Stack.Screen
